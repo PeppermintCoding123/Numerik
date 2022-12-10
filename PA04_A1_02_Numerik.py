@@ -25,6 +25,7 @@ class funct:
         #TODO: auswerten mit x
         # z.b. so eingeben: Jacobian('u1 u2', ['2*u1 + 3*u2','2*u1 - 3*u2'])
         # vergleiche seite https://im-coder.com/berechnen-sie-die-jacobi-matrix-in-python.html'''
+        #Ideen: siehe tests2
         pass
 
 
