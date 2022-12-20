@@ -1,10 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Tue Dec 20 19:23:22 2022
-
-@author: laura
-"""
-
 import numpy as np
 
 # %% 
@@ -39,7 +32,7 @@ class f3:
         return tmp
 
 # %%
-def newton_like(variant, f, x_0, dfz=None, x_1=None, tol=1e-8, max_iter=50):
+def newton_like(f, x_0, dfz=None, x_1=None, tol=1e-8, max_iter=50, delta=0.01, variant='standard'):
     '''Abbruch: |xk-x(k-1)| < tol oder max_iter ist erreicht
     - assume x_0 is np.array'''
     if(f is None or x_0 is None): # ---Macht es einen Unterschied ob man das so oder mit f is Nonen Überprüft?
@@ -110,9 +103,9 @@ def newton_like(variant, f, x_0, dfz=None, x_1=None, tol=1e-8, max_iter=50):
    
 # %%
 
-print(newton_like('standard', f1, np.array([1])))
-print(newton_like('standard', f2, np.array([[0],[1]])))
-print(newton_like('standard', f3, np.ones((37,1))))
+print(newton_like(f1, np.array([1]), variant='standard'))
+print(newton_like(f2, np.array([[0],[1]]), variant='standard'))
+print(newton_like(f3, np.ones((37,1)), variant='standard'))
 
 '''
 print(newton_like('secant', f1, np.array([1])))
@@ -127,7 +120,7 @@ y1 = np.array([1])
 f1 = f1()
 dfz1 = f1.derivative(y1)
 
-print(newton_like('simple', f1, np.array([1]), dfz1))
+print(newton_like(f1, np.array([1]), dfz1, variant='simple'))
 
 
 #dfz für f2
@@ -135,14 +128,14 @@ y2 = np.array([[0],[1]])
 f2 = f2()
 dfz2 = f2.derivative(y2)
 
-print(newton_like('simple', f2, np.array([[0],[1]]), dfz2))
+print(newton_like(f2, np.array([[0],[1]]), dfz2, variant='simple'))
 
 #defz für f3
 y3 = np.ones((37,1))
 f3 = f3()
 dfz3 = f3.derivative(y3)
 
-print(newton_like('simple', f3, np.ones((37,1)), dfz3))
+print(newton_like(f3, np.ones((37,1)), dfz3, variant='simple'))
 
 #%% Plotten
 
