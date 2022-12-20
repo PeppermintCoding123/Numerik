@@ -39,6 +39,7 @@ def newton_like(f, x_0, dfz=None, x_1=None, tol=1e-8, max_iter=50, delta=0.01, v
         raise ValueError('f or x_0 is given incorrectly!')
     
     x_k = x_0.copy()
+    n = np.shape(x_0)[0]
     
     if variant=='standard':
         f = f()
@@ -53,6 +54,39 @@ def newton_like(f, x_0, dfz=None, x_1=None, tol=1e-8, max_iter=50, delta=0.01, v
             x_k = x_k1.copy()
         return x_k
     
+    elif variant=='secant':
+        if f == f1:
+            if x_1 is None:
+                raise ValueError('In Variant==secant: x_1 must be given!')
+            x_k1 = x_1.copy()
+            for i in range (max_iter):
+                f_sup = f.__call__(x_k1) - f.__call__(x_k)
+                if f_sup == 0:
+                    return x_k1 
+                x_k2 = x_k1 - ((x_k1 - x_k)/(f_sup))*f.__call__(x_k1)
+                if np.linalg.norm(x_k1-x_k2) < tol:
+                    return x_k2
+                x_k = x_k1.copy()
+                x_k1 = x_k2.copy()
+            return x_k1
+        else:
+            for k in range(max_iter):
+                #Jk erstellen
+                #Jk = np.zeros((n, n))
+                e = np.zeros((n,1))
+                e[0] = delta
+                Jk = (1/delta) * (f.__call__(x_k + e) - f.__call__(x_k))
+                e[0] = 0
+                for j in range(1,n):
+                    e[j] = delta
+                    Jkj = (1/delta) * (f.__call__(x_k + e) - f.__call__(x_k))
+                    Jk = np.hstack((Jk, Jkj))
+                    e[j] = 0
+                #x_k+1 erstellen  (1/delta) * (f2.__call__(y = (x_k + (delta*e))) - f2.__call__(x_k))
+                #x_k1 = x_k - np.linalg.inv(Jk)@f.__call__(x_k)
+                x_k1 = x_k - np.linalg.solve(Jk, (Jk@x_k - f.__call__(x_k))) #Uns wurde gesagt, wir sollen nicht np.linalg.inv(Jk) benutzen, sondern das ganze mittels eines anderen Verfahrens berechnen
+                x_k = x_k1
+            return x_k
     '''
     elif variant=='secant':
         if x_1 is None:
@@ -107,13 +141,13 @@ print(newton_like(f1, np.array([1]), variant='standard'))
 print(newton_like(f2, np.array([[0],[1]]), variant='standard'))
 print(newton_like(f3, np.ones((37,1)), variant='standard'))
 
-'''
-print(newton_like('secant', f1, np.array([1])))
-print(newton_like('secant', f2, np.array([[0],[1]])))
-print(newton_like('secant', f3, np.ones((37,1))))
+
+#print(newton_like(f1, np.array([1]), x_1 = np.array([1]) + 0.01, variant='secant'))
+#print(newton_like(f2, np.array([[0],[1]]), variant='secant'))
+#print(newton_like(f3, np.ones((37,1)), variant='secant'))
 #Errors for variant 'secant', because currently no x1 given
 #maybe also other errors, not yet tested
-'''
+
 
 #dfz für f1
 y1 = np.array([1])
@@ -136,6 +170,4 @@ f3 = f3()
 dfz3 = f3.derivative(y3)
 
 print(newton_like(f3, np.ones((37,1)), dfz3, variant='simple'))
-
-#%% Plotten
 
