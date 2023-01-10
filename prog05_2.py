@@ -1,9 +1,4 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Tue Jan 10 12:06:12 2023
 
-@author: laura
-"""
 import numpy as np
 #aus Aufgabe 1
 def Horner_polyval(x, a):
