@@ -1,6 +1,6 @@
 # --- Programmierblatt 05 Aufgabe 2 ---
 import numpy as np
-# %%
+# %% --- rewrite this class to be correct with Vander, not whatever is going on now
 class Vandermonde_model:
     #Interpolation with Newton
     def fit(self, x, y):
