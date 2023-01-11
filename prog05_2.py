@@ -1,8 +1,5 @@
-# -*- coding: utf-8 -*-
 """
-Created on Tue Jan 10 12:06:12 2023
-
-@author: laura
+Aufgabe 2, bisher ohne Newton
 """
 import numpy as np
 import matplotlib.pyplot as plt
