@@ -1,5 +1,5 @@
 """
-Aufgabe 2, bisher ohne Newton
+Aufgabe 2
 """
 import numpy as np
 import matplotlib.pyplot as plt
@@ -13,7 +13,8 @@ def Horner_polyval(x, a):
         return 0
     P = a[n-1]*x + a[n-2]
     for i in range(2,n):
-        P *= x+ a[n-1-i]
+        P *= x 
+        P += a[n-1-i]
     return P
 
 #%%Aufgabe 2
@@ -81,18 +82,79 @@ class Lagrange_model:
 
 class Newton_model:
     def fit(self, x, y):
-        pass
+        self.x = x
+        self.y = y
+        if np.shape(self.x)[0] != np.shape(self.y)[0]:
+            raise ValueError('shape of x and y should be the same')
+        self.n = np.shape(self.x)[0]
+        coeff = []
+        f_ = np.zeros((self.n-1,1))
+        f = self.y.copy()
+        for i in range(self.n-1):
+            for j in range(self.n-2-i):
+                f_[j] = (f[j+1]-f[j])/(self.x[j+1+i] - self.x[j])
+                if j == 0:
+                    coeff.append(f_[j])
+                f = f_.copy()
+        self.coeff = coeff
+        
+    '''  nicht mit dividierten Differenzen
+    def __N_k(self, x, k):
+        if k == 0:
+            return self.N_k = 1
+        else:
+            N_k = 1
+            for i in range(k):
+                N_k *= (x-self.x[i])
+            return self.N_k
+    
+    def __a:
+        n = self.x[0]
+        L = np.zeros(n, n)
+        for i, j in range(n):
+            L[i,j] = self.__N_k(self.x[i], j)
+        self.a = np.linalg.solve(L, self.y)
+        return self.a
+     ''' 
     
     def __call__(self, x):
-        pass
+        p = self.coeff[-2] + self.coeff[-1]*(x-self.x[-1])
+        for i in range(2,self.n-1):
+            p *= (x - self.x[-i])
+            p += self.coeff[-i]
+        self.p = p
     
     def add_points(self, x, y):
-        pass
-    
+        if np.shape(x)[0] != np.shape(y)[0]:
+            raise ValueError('shape of x and y should be the same')
+        x_new = np.hstack((self.x, x))
+        y_new = np.vstack((self.y, y))
+        n_new = np.shape(x_new)[0]
+        
+        
+        f_ = np.zeros((n_new-2,1))
+        f = y_new.copy()
+        for i in range(1,n_new-1):
+            if i <= self.n:
+                for j in range(1,n_new-2-i):
+                    f_[j] = (f[j+1]-f[j])/(x_new[j+1+i] - x_new[j])
+                    f = f_.copy()
+            if i > self.n:
+                for j in range(n_new-2-i):
+                    f_[j] = (f[j+1]-f[j])/(x_new[j+1+i] - x_new[j])
+                    if j == 0:
+                        self.coeff.append(f_[j])
+                    f = f_.copy()
+        
+        self.coeff = self.coeff
+        self.x = x_new
+        self.y = y_new
+
+
 #Laufzeiten
 
 plt.close('all')
-fig, ax = plt.subplots(1,3,sharex=True)
+fig, ax = plt.subplots(1,3,sharex=True, sharey=True)
 plt.tight_layout(pad=4)
 
 variants = ['Vandermonde_model', 'Lagrange_model', 'Newton_model']
@@ -111,7 +173,7 @@ x1_slider = Slider(
 axn = fig.add_axes([0.2, 0.1, 0.65, 0.03])
 n_slider = Slider(
     ax = axn, 
-    label='Polynom-Grad',
+    label='Anzahl an Stützstellen',
     valmin = 0,
     valmax = 100,
     valinit = 10,
