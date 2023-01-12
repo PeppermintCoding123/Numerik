@@ -23,7 +23,8 @@ def Horner_polyval(x, a):
         return 0
     P = a[n-1]*x + a[n-2]
     for i in range(2,n):
-        P *= x+ a[n-1-i]
+        P *= x 
+        P += a[n-1-i]
     return P
 
 #(iii) Laufzeiten vergleichen
