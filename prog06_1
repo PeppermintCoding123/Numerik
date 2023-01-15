@@ -1,0 +1,121 @@
+#ohne (ii)
+import numpy as np
+import matplotlib.pyplot as plt
+from matplotlib.widgets import Slider
+
+class procedures:
+    def trapezoidal(self, f, a, b):
+        self.h = b-a
+        self.F = self.__h/2 * (f(a)+f(b))
+        return self.F
+    def Simpson(self, f, a, b):
+        self.h = b-a
+        self.F = self.h/6 * (f(a) + 4*f((a+b)/2)*f(b))
+        return self.F
+    def pulcherrima(self, f, a, b):
+        self.h = b-a
+        self.F = self.h/8 * (f(a) + 3*f(a+self.h/3) + 3*f(a+2*self.h/3)+f(b))
+        return self.F
+    def Milne(self, f, a, b):
+        self.h = b-a
+        self.F = self.h/90 *(7*f(a) + 32*f(a+self.h/4) + 12*f(a+self.h/2) + 32*f(a+3*self.h/4) + 7*f(b))
+        return self.F
+    def six_point(self, f, a, b):
+        self.h = b-a
+        self.F = self.h/288 * (19*f(a) + 75*f((4*a+b)/5) + 50*f((3*a+2*b)/5) + 50*f((2*a+3*b)/5) + 75*f((a+4*b)/5) + 19*f(b))
+        return self.F
+    def Weddle(self, f, a, b):
+        self.h = b-a
+        self.F = self.h/840 * (41*f(a) + 216*f((5*a+b)/6) + 27*f((2*a+b)/3) + 272*f((a+b)/2) + 27*f((a+2*b)/3) + 216*f((a+5*b)/6) + 41+f(b))
+        return self.F
+
+proc = procedures()
+    
+def quad(f, a=0., b=1., method='trapezoidal', num_ints=1):
+    if a >= b:
+        raise ValueError('it should be a < b')
+    if num_ints == 1:
+        if method == 'trapezoidal':
+            return proc.trapezoidal(f, a, b)
+        elif method == 'Simpson':
+            return proc.Simpson(f, a, b)
+        elif method == 'pulcherrima':
+            return proc.pulcherrima(f, a, b)
+        elif method == 'Milne':
+            return proc.Milne(f, a, b)
+        elif method == 'six_point':
+            return proc.six_point(f, a, b)
+        elif method == 'Weddle':
+            return proc.Weddle(f, a, b)
+    if num_ints > 1:
+        pass
+    
+
+def f(x):
+    return (x+1)*np.sin(x)
+
+def F(x):
+    return  -np.cos(x)*(x+1) + np.sin(x)
+
+#%%Plotten
+plt.close('all')
+fig, ax = plt.subplots()
+plt.tight_layout(pad=4)
+
+variants = ['integral', 'trapezoidal', 'Simpson', 'pulcherrima', 'Milne', 'six_point', 'Weddle']
+colors = {'integral':'red', 'trapezoidal':'black', 'Simpson':'cyan', 'pulcherrima':'yellow', 'Milne':'blue', 'six_point':'orange', 'Weddle':'lavender'}
+
+axa = fig.add_axes([0.15,0.07, 0.75, 0.03])
+axb = fig.add_axes([0.15,0.04, 0.75, 0.03])
+axnum_ints = fig.add_axes([0.15, 0.01, 0.75, 0.03])
+    
+a_slider = Slider(
+    ax=axa,
+    label='untere Integralgrenze',
+    valmin=0,
+    valmax=20,
+    valinit=0,
+    valstep=0.5
+)
+
+b_slider = Slider(
+    ax=axb,
+    label = 'obere Integralgrenze',
+    valmin=1,
+    valmax=21,
+    valinit=1,
+    valstep=0.5
+)
+
+num_ints_slider = Slider(
+    ax=axnum_ints,
+    label='Anzahl an Teilintervallen',
+    valmin=1,
+    valmax=100,
+    valinit=1,
+    valstep=0.05
+)
+
+def update(val):
+    a = int(a_slider.val)
+    b = int(b_slider.val)
+    num_ints = int(num_ints_slider.val)
+    
+    ax.clear()
+    ax.set_title('Vergleich der Genauigkeit der Quadratur')
+    
+    integral_values = {}
+    for i, var in enumerate(variants):
+        if var == 'integral':
+            integral_values[var] = F(a) - F(b)
+        else:
+            integral_values[var] = quad(f, a, b, var, num_ints)
+    
+        ax.bar(i, integral_values[var], color=colors[var], label=variants[i])
+    
+    ax.legend()
+    
+update(0)
+a_slider.on_changed(update)
+b_slider.on_changed(update)
+num_ints_slider.on_changed(update)
