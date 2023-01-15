@@ -1,4 +1,3 @@
-#ohne (ii)
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.widgets import Slider
@@ -6,7 +5,7 @@ from matplotlib.widgets import Slider
 class procedures:
     def trapezoidal(self, f, a, b):
         self.h = b-a
-        self.F = self.__h/2 * (f(a)+f(b))
+        self.F = self.h/2 * (f(a)+f(b))
         return self.F
     def Simpson(self, f, a, b):
         self.h = b-a
@@ -48,7 +47,22 @@ def quad(f, a=0., b=1., method='trapezoidal', num_ints=1):
         elif method == 'Weddle':
             return proc.Weddle(f, a, b)
     if num_ints > 1:
-        pass
+        c = np.linspace(a, b, num_ints+1)
+        sum = 0
+        for i in range(num_ints):
+            if method == 'trapezoidal':
+                sum += proc.trapezoidal(f, c[i], c[i+1])
+            elif method == 'Simpson':
+                sum += proc.Simpson(f, c[i], c[i+1])
+            elif method == 'pulcherrima':
+                sum += proc.pulcherrima(f, c[i], c[i+1])
+            elif method == 'Milne':
+                sum += proc.Milne(f, c[i], c[i+1])
+            elif method == 'six_point':
+                sum += proc.six_point(f, c[i], c[i+1])
+            elif method == 'Weddle':
+                sum += proc.Weddle(f, c[i], c[i+1])
+        return sum
     
 
 def f(x):
