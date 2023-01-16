@@ -121,7 +121,7 @@ def update(val):
     integral_values = {}
     for i, var in enumerate(variants):
         if var == 'integral':
-            integral_values[var] = F(a) - F(b)
+            integral_values[var] = F(b) - F(a)
         else:
             integral_values[var] = quad(f, a, b, var, num_ints)
     
